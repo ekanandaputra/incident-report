@@ -245,8 +245,9 @@ The server will start on `http://localhost:8080`
 - **Request Body:**
   ```json
   {
+    "code": "BLDG001",
     "name": "Building A",
-    "address": "123 Main Street"
+    "location": "123 Main Street"
   }
   ```
 - **Response:** `201 Created`
@@ -256,8 +257,11 @@ The server will start on `http://localhost:8080`
     "message": "Building created successfully",
     "data": {
       "id": 1,
+      "code": "BLDG001",
       "name": "Building A",
-      "address": "123 Main Street"
+      "location": "123 Main Street",
+      "created_at": 1703000000,
+      "updated_at": 1703000000
     }
   }
   ```
@@ -272,8 +276,11 @@ The server will start on `http://localhost:8080`
     "data": [
       {
         "id": 1,
+        "code": "BLDG001",
         "name": "Building A",
-        "address": "123 Main Street"
+        "location": "123 Main Street",
+        "created_at": 1703000000,
+        "updated_at": 1703000000
       }
     ]
   }
@@ -288,8 +295,11 @@ The server will start on `http://localhost:8080`
     "message": "Building retrieved successfully",
     "data": {
       "id": 1,
+      "code": "BLDG001",
       "name": "Building A",
-      "address": "123 Main Street"
+      "location": "123 Main Street",
+      "created_at": 1703000000,
+      "updated_at": 1703000000
     }
   }
   ```
@@ -305,7 +315,10 @@ The server will start on `http://localhost:8080`
       {
         "id": 1,
         "building_id": 1,
-        "name": "Ground Floor"
+        "number": 0,
+        "name": "Ground Floor",
+        "created_at": 1703000000,
+        "updated_at": 1703000000
       }
     ]
   }
@@ -316,8 +329,9 @@ The server will start on `http://localhost:8080`
 - **Request Body:**
   ```json
   {
+    "code": "BLDG001",
     "name": "Building A - Updated",
-    "address": "456 New Avenue"
+    "location": "456 New Avenue"
   }
   ```
 - **Response:** `200 OK`
@@ -327,8 +341,11 @@ The server will start on `http://localhost:8080`
     "message": "Building updated successfully",
     "data": {
       "id": 1,
+      "code": "BLDG001",
       "name": "Building A - Updated",
-      "address": "456 New Avenue"
+      "location": "456 New Avenue",
+      "created_at": 1703000000,
+      "updated_at": 1703000001
     }
   }
   ```
@@ -351,8 +368,8 @@ The server will start on `http://localhost:8080`
   ```json
   {
     "building_id": 1,
-    "name": "Ground Floor",
-    "floor_number": 0
+    "number": 0,
+    "name": "Ground Floor"
   }
   ```
 - **Response:** `201 Created`
@@ -363,8 +380,10 @@ The server will start on `http://localhost:8080`
     "data": {
       "id": 1,
       "building_id": 1,
+      "number": 0,
       "name": "Ground Floor",
-      "floor_number": 0
+      "created_at": 1703000000,
+      "updated_at": 1703000000
     }
   }
   ```
@@ -379,8 +398,10 @@ The server will start on `http://localhost:8080`
     "data": {
       "id": 1,
       "building_id": 1,
+      "number": 0,
       "name": "Ground Floor",
-      "floor_number": 0
+      "created_at": 1703000000,
+      "updated_at": 1703000000
     }
   }
   ```
@@ -396,7 +417,10 @@ The server will start on `http://localhost:8080`
       {
         "id": 1,
         "floor_id": 1,
-        "name": "Conference Room A"
+        "code": "ROOM001",
+        "name": "Conference Room A",
+        "created_at": 1703000000,
+        "updated_at": 1703000000
       }
     ]
   }
@@ -407,8 +431,8 @@ The server will start on `http://localhost:8080`
 - **Request Body:**
   ```json
   {
-    "name": "First Floor",
-    "floor_number": 1
+    "number": 1,
+    "name": "First Floor"
   }
   ```
 - **Response:** `200 OK`
@@ -419,8 +443,10 @@ The server will start on `http://localhost:8080`
     "data": {
       "id": 1,
       "building_id": 1,
+      "number": 1,
       "name": "First Floor",
-      "floor_number": 1
+      "created_at": 1703000000,
+      "updated_at": 1703000001
     }
   }
   ```
@@ -443,8 +469,8 @@ The server will start on `http://localhost:8080`
   ```json
   {
     "floor_id": 1,
-    "name": "Conference Room A",
-    "room_number": "101"
+    "code": "ROOM001",
+    "name": "Conference Room A"
   }
   ```
 - **Response:** `201 Created`
@@ -455,8 +481,10 @@ The server will start on `http://localhost:8080`
     "data": {
       "id": 1,
       "floor_id": 1,
+      "code": "ROOM001",
       "name": "Conference Room A",
-      "room_number": "101"
+      "created_at": 1703000000,
+      "updated_at": 1703000000
     }
   }
   ```
@@ -471,8 +499,10 @@ The server will start on `http://localhost:8080`
     "data": {
       "id": 1,
       "floor_id": 1,
+      "code": "ROOM001",
       "name": "Conference Room A",
-      "room_number": "101"
+      "created_at": 1703000000,
+      "updated_at": 1703000000
     }
   }
   ```
@@ -489,8 +519,13 @@ The server will start on `http://localhost:8080`
         "id": 1,
         "room_id": 1,
         "category_id": 1,
+        "code": "COMP001",
         "name": "Smoke Detector",
-        "serial_number": "SN12345"
+        "brand": "SafetyTech",
+        "specification": "Fire Detection System",
+        "procurement_year": 2023,
+        "created_at": 1703000000,
+        "updated_at": 1703000000
       }
     ]
   }
@@ -501,8 +536,8 @@ The server will start on `http://localhost:8080`
 - **Request Body:**
   ```json
   {
-    "name": "Meeting Room B",
-    "room_number": "102"
+    "code": "ROOM002",
+    "name": "Meeting Room B"
   }
   ```
 - **Response:** `200 OK`
@@ -513,8 +548,10 @@ The server will start on `http://localhost:8080`
     "data": {
       "id": 1,
       "floor_id": 1,
+      "code": "ROOM002",
       "name": "Meeting Room B",
-      "room_number": "102"
+      "created_at": 1703000000,
+      "updated_at": 1703000001
     }
   }
   ```
@@ -536,6 +573,7 @@ The server will start on `http://localhost:8080`
 - **Request Body:**
   ```json
   {
+    "code": "ELEC",
     "name": "Electrical Systems",
     "description": "Electrical components and systems"
   }
@@ -547,8 +585,11 @@ The server will start on `http://localhost:8080`
     "message": "Component category created successfully",
     "data": {
       "id": 1,
+      "code": "ELEC",
       "name": "Electrical Systems",
-      "description": "Electrical components and systems"
+      "description": "Electrical components and systems",
+      "created_at": 1703000000,
+      "updated_at": 1703000000
     }
   }
   ```
@@ -563,8 +604,11 @@ The server will start on `http://localhost:8080`
     "data": [
       {
         "id": 1,
+        "code": "ELEC",
         "name": "Electrical Systems",
-        "description": "Electrical components and systems"
+        "description": "Electrical components and systems",
+        "created_at": 1703000000,
+        "updated_at": 1703000000
       }
     ]
   }
@@ -579,8 +623,11 @@ The server will start on `http://localhost:8080`
     "message": "Component category retrieved successfully",
     "data": {
       "id": 1,
+      "code": "ELEC",
       "name": "Electrical Systems",
-      "description": "Electrical components and systems"
+      "description": "Electrical components and systems",
+      "created_at": 1703000000,
+      "updated_at": 1703000000
     }
   }
   ```
@@ -595,10 +642,15 @@ The server will start on `http://localhost:8080`
     "data": [
       {
         "id": 1,
-        "category_id": 1,
         "room_id": 1,
+        "category_id": 1,
+        "code": "COMP001",
         "name": "Circuit Breaker",
-        "serial_number": "CB001"
+        "brand": "ElectroSafe",
+        "specification": "Main breaker panel 200A",
+        "procurement_year": 2022,
+        "created_at": 1703000000,
+        "updated_at": 1703000000
       }
     ]
   }
@@ -609,6 +661,7 @@ The server will start on `http://localhost:8080`
 - **Request Body:**
   ```json
   {
+    "code": "HVAC",
     "name": "HVAC Systems",
     "description": "Heating, ventilation, and air conditioning"
   }
@@ -620,8 +673,11 @@ The server will start on `http://localhost:8080`
     "message": "Component category updated successfully",
     "data": {
       "id": 1,
+      "code": "HVAC",
       "name": "HVAC Systems",
-      "description": "Heating, ventilation, and air conditioning"
+      "description": "Heating, ventilation, and air conditioning",
+      "created_at": 1703000000,
+      "updated_at": 1703000001
     }
   }
   ```
@@ -645,9 +701,11 @@ The server will start on `http://localhost:8080`
   {
     "room_id": 1,
     "category_id": 1,
+    "code": "COMP001",
     "name": "Smoke Detector",
-    "serial_number": "SD12345",
-    "installation_date": "2024-01-15"
+    "brand": "SafetyTech",
+    "specification": "Ionization Fire Detector",
+    "procurement_year": 2023
   }
   ```
 - **Response:** `201 Created`
@@ -659,9 +717,13 @@ The server will start on `http://localhost:8080`
       "id": 1,
       "room_id": 1,
       "category_id": 1,
+      "code": "COMP001",
       "name": "Smoke Detector",
-      "serial_number": "SD12345",
-      "installation_date": "2024-01-15"
+      "brand": "SafetyTech",
+      "specification": "Ionization Fire Detector",
+      "procurement_year": 2023,
+      "created_at": 1703000000,
+      "updated_at": 1703000000
     }
   }
   ```
@@ -677,9 +739,13 @@ The server will start on `http://localhost:8080`
       "id": 1,
       "room_id": 1,
       "category_id": 1,
+      "code": "COMP001",
       "name": "Smoke Detector",
-      "serial_number": "SD12345",
-      "installation_date": "2024-01-15"
+      "brand": "SafetyTech",
+      "specification": "Ionization Fire Detector",
+      "procurement_year": 2023,
+      "created_at": 1703000000,
+      "updated_at": 1703000000
     }
   }
   ```
@@ -689,8 +755,11 @@ The server will start on `http://localhost:8080`
 - **Request Body:**
   ```json
   {
+    "code": "COMP002",
     "name": "Fire Alarm Detector",
-    "serial_number": "FAD12345"
+    "brand": "SafetyTech Pro",
+    "specification": "Advanced Fire Detection System",
+    "procurement_year": 2024
   }
   ```
 - **Response:** `200 OK`
@@ -702,9 +771,13 @@ The server will start on `http://localhost:8080`
       "id": 1,
       "room_id": 1,
       "category_id": 1,
+      "code": "COMP002",
       "name": "Fire Alarm Detector",
-      "serial_number": "FAD12345",
-      "installation_date": "2024-01-15"
+      "brand": "SafetyTech Pro",
+      "specification": "Advanced Fire Detection System",
+      "procurement_year": 2024,
+      "created_at": 1703000000,
+      "updated_at": 1703000001
     }
   }
   ```
