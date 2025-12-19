@@ -238,6 +238,487 @@ The server will start on `http://localhost:8080`
   }
   ```
 
+### Building Management
+
+#### Create Building
+- **POST** `/api/v1/buildings`
+- **Request Body:**
+  ```json
+  {
+    "name": "Building A",
+    "address": "123 Main Street"
+  }
+  ```
+- **Response:** `201 Created`
+  ```json
+  {
+    "success": true,
+    "message": "Building created successfully",
+    "data": {
+      "id": 1,
+      "name": "Building A",
+      "address": "123 Main Street"
+    }
+  }
+  ```
+
+#### Get All Buildings
+- **GET** `/api/v1/buildings`
+- **Response:** `200 OK`
+  ```json
+  {
+    "success": true,
+    "message": "Buildings retrieved successfully",
+    "data": [
+      {
+        "id": 1,
+        "name": "Building A",
+        "address": "123 Main Street"
+      }
+    ]
+  }
+  ```
+
+#### Get Building by ID
+- **GET** `/api/v1/buildings/:id`
+- **Response:** `200 OK`
+  ```json
+  {
+    "success": true,
+    "message": "Building retrieved successfully",
+    "data": {
+      "id": 1,
+      "name": "Building A",
+      "address": "123 Main Street"
+    }
+  }
+  ```
+
+#### Get Floors in Building
+- **GET** `/api/v1/buildings/:id/floors`
+- **Response:** `200 OK`
+  ```json
+  {
+    "success": true,
+    "message": "Floors retrieved successfully",
+    "data": [
+      {
+        "id": 1,
+        "building_id": 1,
+        "name": "Ground Floor"
+      }
+    ]
+  }
+  ```
+
+#### Update Building
+- **PUT** `/api/v1/buildings/:id`
+- **Request Body:**
+  ```json
+  {
+    "name": "Building A - Updated",
+    "address": "456 New Avenue"
+  }
+  ```
+- **Response:** `200 OK`
+  ```json
+  {
+    "success": true,
+    "message": "Building updated successfully",
+    "data": {
+      "id": 1,
+      "name": "Building A - Updated",
+      "address": "456 New Avenue"
+    }
+  }
+  ```
+
+#### Delete Building
+- **DELETE** `/api/v1/buildings/:id`
+- **Response:** `200 OK`
+  ```json
+  {
+    "success": true,
+    "message": "Building deleted successfully"
+  }
+  ```
+
+### Floor Management
+
+#### Create Floor
+- **POST** `/api/v1/floors`
+- **Request Body:**
+  ```json
+  {
+    "building_id": 1,
+    "name": "Ground Floor",
+    "floor_number": 0
+  }
+  ```
+- **Response:** `201 Created`
+  ```json
+  {
+    "success": true,
+    "message": "Floor created successfully",
+    "data": {
+      "id": 1,
+      "building_id": 1,
+      "name": "Ground Floor",
+      "floor_number": 0
+    }
+  }
+  ```
+
+#### Get Floor by ID
+- **GET** `/api/v1/floors/:id`
+- **Response:** `200 OK`
+  ```json
+  {
+    "success": true,
+    "message": "Floor retrieved successfully",
+    "data": {
+      "id": 1,
+      "building_id": 1,
+      "name": "Ground Floor",
+      "floor_number": 0
+    }
+  }
+  ```
+
+#### Get Rooms on Floor
+- **GET** `/api/v1/floors/:id/rooms`
+- **Response:** `200 OK`
+  ```json
+  {
+    "success": true,
+    "message": "Rooms retrieved successfully",
+    "data": [
+      {
+        "id": 1,
+        "floor_id": 1,
+        "name": "Conference Room A"
+      }
+    ]
+  }
+  ```
+
+#### Update Floor
+- **PUT** `/api/v1/floors/:id`
+- **Request Body:**
+  ```json
+  {
+    "name": "First Floor",
+    "floor_number": 1
+  }
+  ```
+- **Response:** `200 OK`
+  ```json
+  {
+    "success": true,
+    "message": "Floor updated successfully",
+    "data": {
+      "id": 1,
+      "building_id": 1,
+      "name": "First Floor",
+      "floor_number": 1
+    }
+  }
+  ```
+
+#### Delete Floor
+- **DELETE** `/api/v1/floors/:id`
+- **Response:** `200 OK`
+  ```json
+  {
+    "success": true,
+    "message": "Floor deleted successfully"
+  }
+  ```
+
+### Room Management
+
+#### Create Room
+- **POST** `/api/v1/rooms`
+- **Request Body:**
+  ```json
+  {
+    "floor_id": 1,
+    "name": "Conference Room A",
+    "room_number": "101"
+  }
+  ```
+- **Response:** `201 Created`
+  ```json
+  {
+    "success": true,
+    "message": "Room created successfully",
+    "data": {
+      "id": 1,
+      "floor_id": 1,
+      "name": "Conference Room A",
+      "room_number": "101"
+    }
+  }
+  ```
+
+#### Get Room by ID
+- **GET** `/api/v1/rooms/:id`
+- **Response:** `200 OK`
+  ```json
+  {
+    "success": true,
+    "message": "Room retrieved successfully",
+    "data": {
+      "id": 1,
+      "floor_id": 1,
+      "name": "Conference Room A",
+      "room_number": "101"
+    }
+  }
+  ```
+
+#### Get Components in Room
+- **GET** `/api/v1/rooms/:id/components`
+- **Response:** `200 OK`
+  ```json
+  {
+    "success": true,
+    "message": "Components retrieved successfully",
+    "data": [
+      {
+        "id": 1,
+        "room_id": 1,
+        "category_id": 1,
+        "name": "Smoke Detector",
+        "serial_number": "SN12345"
+      }
+    ]
+  }
+  ```
+
+#### Update Room
+- **PUT** `/api/v1/rooms/:id`
+- **Request Body:**
+  ```json
+  {
+    "name": "Meeting Room B",
+    "room_number": "102"
+  }
+  ```
+- **Response:** `200 OK`
+  ```json
+  {
+    "success": true,
+    "message": "Room updated successfully",
+    "data": {
+      "id": 1,
+      "floor_id": 1,
+      "name": "Meeting Room B",
+      "room_number": "102"
+    }
+  }
+  ```
+
+#### Delete Room
+- **DELETE** `/api/v1/rooms/:id`
+- **Response:** `200 OK`
+  ```json
+  {
+    "success": true,
+    "message": "Room deleted successfully"
+  }
+  ```
+
+### Component Category Management
+
+#### Create Component Category
+- **POST** `/api/v1/component-categories`
+- **Request Body:**
+  ```json
+  {
+    "name": "Electrical Systems",
+    "description": "Electrical components and systems"
+  }
+  ```
+- **Response:** `201 Created`
+  ```json
+  {
+    "success": true,
+    "message": "Component category created successfully",
+    "data": {
+      "id": 1,
+      "name": "Electrical Systems",
+      "description": "Electrical components and systems"
+    }
+  }
+  ```
+
+#### Get All Component Categories
+- **GET** `/api/v1/component-categories`
+- **Response:** `200 OK`
+  ```json
+  {
+    "success": true,
+    "message": "Component categories retrieved successfully",
+    "data": [
+      {
+        "id": 1,
+        "name": "Electrical Systems",
+        "description": "Electrical components and systems"
+      }
+    ]
+  }
+  ```
+
+#### Get Component Category by ID
+- **GET** `/api/v1/component-categories/:id`
+- **Response:** `200 OK`
+  ```json
+  {
+    "success": true,
+    "message": "Component category retrieved successfully",
+    "data": {
+      "id": 1,
+      "name": "Electrical Systems",
+      "description": "Electrical components and systems"
+    }
+  }
+  ```
+
+#### Get Components in Category
+- **GET** `/api/v1/component-categories/:id/components`
+- **Response:** `200 OK`
+  ```json
+  {
+    "success": true,
+    "message": "Components retrieved successfully",
+    "data": [
+      {
+        "id": 1,
+        "category_id": 1,
+        "room_id": 1,
+        "name": "Circuit Breaker",
+        "serial_number": "CB001"
+      }
+    ]
+  }
+  ```
+
+#### Update Component Category
+- **PUT** `/api/v1/component-categories/:id`
+- **Request Body:**
+  ```json
+  {
+    "name": "HVAC Systems",
+    "description": "Heating, ventilation, and air conditioning"
+  }
+  ```
+- **Response:** `200 OK`
+  ```json
+  {
+    "success": true,
+    "message": "Component category updated successfully",
+    "data": {
+      "id": 1,
+      "name": "HVAC Systems",
+      "description": "Heating, ventilation, and air conditioning"
+    }
+  }
+  ```
+
+#### Delete Component Category
+- **DELETE** `/api/v1/component-categories/:id`
+- **Response:** `200 OK`
+  ```json
+  {
+    "success": true,
+    "message": "Component category deleted successfully"
+  }
+  ```
+
+### Component Management
+
+#### Create Component
+- **POST** `/api/v1/components`
+- **Request Body:**
+  ```json
+  {
+    "room_id": 1,
+    "category_id": 1,
+    "name": "Smoke Detector",
+    "serial_number": "SD12345",
+    "installation_date": "2024-01-15"
+  }
+  ```
+- **Response:** `201 Created`
+  ```json
+  {
+    "success": true,
+    "message": "Component created successfully",
+    "data": {
+      "id": 1,
+      "room_id": 1,
+      "category_id": 1,
+      "name": "Smoke Detector",
+      "serial_number": "SD12345",
+      "installation_date": "2024-01-15"
+    }
+  }
+  ```
+
+#### Get Component by ID
+- **GET** `/api/v1/components/:id`
+- **Response:** `200 OK`
+  ```json
+  {
+    "success": true,
+    "message": "Component retrieved successfully",
+    "data": {
+      "id": 1,
+      "room_id": 1,
+      "category_id": 1,
+      "name": "Smoke Detector",
+      "serial_number": "SD12345",
+      "installation_date": "2024-01-15"
+    }
+  }
+  ```
+
+#### Update Component
+- **PUT** `/api/v1/components/:id`
+- **Request Body:**
+  ```json
+  {
+    "name": "Fire Alarm Detector",
+    "serial_number": "FAD12345"
+  }
+  ```
+- **Response:** `200 OK`
+  ```json
+  {
+    "success": true,
+    "message": "Component updated successfully",
+    "data": {
+      "id": 1,
+      "room_id": 1,
+      "category_id": 1,
+      "name": "Fire Alarm Detector",
+      "serial_number": "FAD12345",
+      "installation_date": "2024-01-15"
+    }
+  }
+  ```
+
+#### Delete Component
+- **DELETE** `/api/v1/components/:id`
+- **Response:** `200 OK`
+  ```json
+  {
+    "success": true,
+    "message": "Component deleted successfully"
+  }
+  ```
+
 ## 💡 Usage Examples
 
 ### Using cURL
