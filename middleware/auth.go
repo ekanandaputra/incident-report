@@ -3,6 +3,7 @@ package middleware
 import (
 	"incident-report/utils"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -63,16 +64,38 @@ import (
 // Currently a template - implement based on your requirements
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// Set CORS headers
-		// In production, replace "*" with specific allowed origins
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		origin := c.GetHeader("Origin")
+		allowed := os.Getenv("CORS_ALLOW_ORIGINS")
+
+		if strings.TrimSpace(allowed) == "" {
+			allowed = "*"
+		}
+
+		// If wildcard is present, allow all origins and set credentials to false
+		if strings.Contains(allowed, "*") {
+			c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+			c.Writer.Header().Set("Access-Control-Allow-Credentials", "false")
+		} else {
+			matched := false
+			for _, o := range strings.Split(allowed, ",") {
+				if strings.TrimSpace(o) == origin {
+					c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
+					matched = true
+					break
+				}
+			}
+			if !matched {
+				first := strings.Split(allowed, ",")[0]
+				c.Writer.Header().Set("Access-Control-Allow-Origin", strings.TrimSpace(first))
+			}
+			c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		}
+
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE, PATCH")
 
-		// Handle preflight requests
-		if c.Request.Method == "OPTIONS" {
-			c.AbortWithStatus(204)
+		if c.Request.Method == http.MethodOptions {
+			c.AbortWithStatus(http.StatusNoContent)
 			return
 		}
 
