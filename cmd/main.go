@@ -50,7 +50,7 @@ func main() {
 
 	// Set defaults if environment variables are not set
 	if host == "" {
-		host = "localhost"
+		host = "0.0.0.0"
 	}
 	if port == "" {
 		port = "8080"

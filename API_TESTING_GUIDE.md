@@ -484,4 +484,172 @@ go mod download
 
 ---
 
+## 8. Other API Endpoints
+
+This section lists all remaining API endpoints implemented in the project with short cURL examples and expected response shapes.
+
+- **Base path:** `http://localhost:8080/api/v1`
+
+- **Buildings**
+  - Create building (POST):
+    ```bash
+    curl -X POST http://localhost:8080/api/v1/buildings \
+      -H "Content-Type: application/json" \
+      -d '{"name":"Building A","address":"123 Main St"}'
+    ```
+    Expected: 201 Created with created building object
+
+  - Get all buildings (GET):
+    ```bash
+    curl http://localhost:8080/api/v1/buildings
+    ```
+    Expected: 200 OK, array of buildings
+
+  - Get building (GET):
+    ```bash
+    curl http://localhost:8080/api/v1/buildings/1
+    ```
+    Expected: 200 OK, building object
+
+  - Get floors in building (GET):
+    ```bash
+    curl http://localhost:8080/api/v1/buildings/1/floors
+    ```
+    Expected: 200 OK, array of floors for building
+
+  - Update building (PUT):
+    ```bash
+    curl -X PUT http://localhost:8080/api/v1/buildings/1 \
+      -H "Content-Type: application/json" \
+      -d '{"name":"New Name"}'
+    ```
+
+  - Delete building (DELETE):
+    ```bash
+    curl -X DELETE http://localhost:8080/api/v1/buildings/1
+    ```
+
+- **Floors**
+  - Create floor (POST):
+    ```bash
+    curl -X POST http://localhost:8080/api/v1/floors \
+      -H "Content-Type: application/json" \
+      -d '{"building_id":1,"name":"1st Floor"}'
+    ```
+
+  - Get floor (GET):
+    ```bash
+    curl http://localhost:8080/api/v1/floors/1
+    ```
+
+  - Get rooms on floor (GET):
+    ```bash
+    curl http://localhost:8080/api/v1/floors/1/rooms
+    ```
+
+  - Update floor (PUT):
+    ```bash
+    curl -X PUT http://localhost:8080/api/v1/floors/1 \
+      -H "Content-Type: application/json" \
+      -d '{"name":"Ground Floor"}'
+    ```
+
+  - Delete floor (DELETE):
+    ```bash
+    curl -X DELETE http://localhost:8080/api/v1/floors/1
+    ```
+
+- **Rooms**
+  - Create room (POST):
+    ```bash
+    curl -X POST http://localhost:8080/api/v1/rooms \
+      -H "Content-Type: application/json" \
+      -d '{"floor_id":1,"name":"Room 101"}'
+    ```
+
+  - Get room (GET):
+    ```bash
+    curl http://localhost:8080/api/v1/rooms/1
+    ```
+
+  - Get components in room (GET):
+    ```bash
+    curl http://localhost:8080/api/v1/rooms/1/components
+    ```
+
+  - Update room (PUT):
+    ```bash
+    curl -X PUT http://localhost:8080/api/v1/rooms/1 \
+      -H "Content-Type: application/json" \
+      -d '{"name":"Updated Room"}'
+    ```
+
+  - Delete room (DELETE):
+    ```bash
+    curl -X DELETE http://localhost:8080/api/v1/rooms/1
+    ```
+
+- **Component Categories**
+  - Create category (POST):
+    ```bash
+    curl -X POST http://localhost:8080/api/v1/component-categories \
+      -H "Content-Type: application/json" \
+      -d '{"name":"Electrical"}'
+    ```
+
+  - Get all categories (GET):
+    ```bash
+    curl http://localhost:8080/api/v1/component-categories
+    ```
+
+  - Get category (GET):
+    ```bash
+    curl http://localhost:8080/api/v1/component-categories/1
+    ```
+
+  - Get components in category (GET):
+    ```bash
+    curl http://localhost:8080/api/v1/component-categories/1/components
+    ```
+
+  - Update category (PUT):
+    ```bash
+    curl -X PUT http://localhost:8080/api/v1/component-categories/1 \
+      -H "Content-Type: application/json" \
+      -d '{"name":"New Category"}'
+    ```
+
+  - Delete category (DELETE):
+    ```bash
+    curl -X DELETE http://localhost:8080/api/v1/component-categories/1
+    ```
+
+- **Components**
+  - Create component (POST):
+    ```bash
+    curl -X POST http://localhost:8080/api/v1/components \
+      -H "Content-Type: application/json" \
+      -d '{"room_id":1,"category_id":1,"name":"Smoke Detector","serial_number":"SN123"}'
+    ```
+
+  - Get component (GET):
+    ```bash
+    curl http://localhost:8080/api/v1/components/1
+    ```
+
+  - Update component (PUT):
+    ```bash
+    curl -X PUT http://localhost:8080/api/v1/components/1 \
+      -H "Content-Type: application/json" \
+      -d '{"name":"New Component Name"}'
+    ```
+
+  - Delete component (DELETE):
+    ```bash
+    curl -X DELETE http://localhost:8080/api/v1/components/1
+    ```
+
+---
+
+**Happy Testing! 🚀**
 **Happy Testing! 🚀**
