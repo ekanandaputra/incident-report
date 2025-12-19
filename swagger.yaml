@@ -1,0 +1,1531 @@
+openapi: 3.0.0
+info:
+  title: Incident Report API
+  description: A production-ready RESTful API for building management with component tracking
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@example.com
+  license:
+    name: MIT
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Development server
+  - url: https://api.example.com/api/v1
+    description: Production server
+
+tags:
+  - name: Health
+    description: Server health check
+  - name: Users
+    description: User management operations
+  - name: Buildings
+    description: Building management operations
+  - name: Floors
+    description: Floor management operations
+  - name: Rooms
+    description: Room management operations
+  - name: Component Categories
+    description: Component category operations
+  - name: Components
+    description: Component management operations
+
+paths:
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health Check
+      description: Check if the server is running and healthy
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Server is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: healthy
+                  message:
+                    type: string
+                    example: Server is running
+
+  /users:
+    post:
+      tags:
+        - Users
+      summary: Create User
+      description: Create a new user in the system
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      tags:
+        - Users
+      summary: Get All Users
+      description: Get all users with pagination support
+      operationId: getAllUsers
+      parameters:
+        - name: page
+          in: query
+          description: Page number (default 1)
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: page_size
+          in: query
+          description: Records per page (default 10, max 100)
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+      responses:
+        '200':
+          description: Users retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserResponse'
+        '400':
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/{id}:
+    get:
+      tags:
+        - Users
+      summary: Get User by ID
+      description: Retrieve a specific user by ID
+      operationId: getUserById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: User ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: User retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - Users
+      summary: Update User
+      description: Update a user (partial update allowed)
+      operationId: updateUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: User ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Update failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Users
+      summary: Delete User
+      description: Delete a user from the system
+      operationId: deleteUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: User ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: User deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Deletion failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /buildings:
+    post:
+      tags:
+        - Buildings
+      summary: Create Building
+      description: Create a new building
+      operationId: createBuilding
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBuildingRequest'
+      responses:
+        '201':
+          description: Building created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BuildingResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      tags:
+        - Buildings
+      summary: Get All Buildings
+      description: Get all buildings
+      operationId: getAllBuildings
+      responses:
+        '200':
+          description: Buildings retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BuildingsListResponse'
+
+  /buildings/{id}:
+    get:
+      tags:
+        - Buildings
+      summary: Get Building by ID
+      description: Retrieve a specific building by ID
+      operationId: getBuildingById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Building ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Building retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BuildingResponse'
+        '400':
+          description: Building not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - Buildings
+      summary: Update Building
+      description: Update a building
+      operationId: updateBuilding
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Building ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBuildingRequest'
+      responses:
+        '200':
+          description: Building updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BuildingResponse'
+        '400':
+          description: Update failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Buildings
+      summary: Delete Building
+      description: Delete a building
+      operationId: deleteBuilding
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Building ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Building deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Deletion failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /buildings/{id}/floors:
+    get:
+      tags:
+        - Buildings
+        - Floors
+      summary: Get Floors in Building
+      description: Get all floors in a specific building
+      operationId: getFloorsByBuilding
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Building ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Floors retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FloorsListResponse'
+
+  /floors:
+    post:
+      tags:
+        - Floors
+      summary: Create Floor
+      description: Create a new floor
+      operationId: createFloor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFloorRequest'
+      responses:
+        '201':
+          description: Floor created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FloorResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /floors/{id}:
+    get:
+      tags:
+        - Floors
+      summary: Get Floor by ID
+      description: Retrieve a specific floor by ID
+      operationId: getFloorById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Floor ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Floor retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FloorResponse'
+        '400':
+          description: Floor not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - Floors
+      summary: Update Floor
+      description: Update a floor
+      operationId: updateFloor
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Floor ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateFloorRequest'
+      responses:
+        '200':
+          description: Floor updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FloorResponse'
+        '400':
+          description: Update failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Floors
+      summary: Delete Floor
+      description: Delete a floor
+      operationId: deleteFloor
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Floor ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Floor deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Deletion failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /floors/{id}/rooms:
+    get:
+      tags:
+        - Floors
+        - Rooms
+      summary: Get Rooms on Floor
+      description: Get all rooms on a specific floor
+      operationId: getRoomsByFloor
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Floor ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Rooms retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoomsListResponse'
+
+  /rooms:
+    post:
+      tags:
+        - Rooms
+      summary: Create Room
+      description: Create a new room
+      operationId: createRoom
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRoomRequest'
+      responses:
+        '201':
+          description: Room created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoomResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /rooms/{id}:
+    get:
+      tags:
+        - Rooms
+      summary: Get Room by ID
+      description: Retrieve a specific room by ID
+      operationId: getRoomById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Room ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Room retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoomResponse'
+        '400':
+          description: Room not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - Rooms
+      summary: Update Room
+      description: Update a room
+      operationId: updateRoom
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Room ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRoomRequest'
+      responses:
+        '200':
+          description: Room updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoomResponse'
+        '400':
+          description: Update failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Rooms
+      summary: Delete Room
+      description: Delete a room
+      operationId: deleteRoom
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Room ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Room deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Deletion failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /rooms/{id}/components:
+    get:
+      tags:
+        - Rooms
+        - Components
+      summary: Get Components in Room
+      description: Get all components in a specific room
+      operationId: getComponentsByRoom
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Room ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Components retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentsListResponse'
+
+  /component-categories:
+    post:
+      tags:
+        - Component Categories
+      summary: Create Component Category
+      description: Create a new component category
+      operationId: createComponentCategory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateComponentCategoryRequest'
+      responses:
+        '201':
+          description: Component category created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentCategoryResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      tags:
+        - Component Categories
+      summary: Get All Component Categories
+      description: Get all component categories
+      operationId: getAllComponentCategories
+      responses:
+        '200':
+          description: Component categories retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentCategoriesListResponse'
+
+  /component-categories/{id}:
+    get:
+      tags:
+        - Component Categories
+      summary: Get Component Category by ID
+      description: Retrieve a specific component category by ID
+      operationId: getComponentCategoryById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Component Category ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Component category retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentCategoryResponse'
+        '400':
+          description: Component category not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - Component Categories
+      summary: Update Component Category
+      description: Update a component category
+      operationId: updateComponentCategory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Component Category ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateComponentCategoryRequest'
+      responses:
+        '200':
+          description: Component category updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentCategoryResponse'
+        '400':
+          description: Update failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Component Categories
+      summary: Delete Component Category
+      description: Delete a component category
+      operationId: deleteComponentCategory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Component Category ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Component category deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Deletion failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /component-categories/{id}/components:
+    get:
+      tags:
+        - Component Categories
+        - Components
+      summary: Get Components in Category
+      description: Get all components in a specific category
+      operationId: getComponentsByCategory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Component Category ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Components retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentsListResponse'
+
+  /components:
+    post:
+      tags:
+        - Components
+      summary: Create Component
+      description: Create a new component
+      operationId: createComponent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateComponentRequest'
+      responses:
+        '201':
+          description: Component created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /components/{id}:
+    get:
+      tags:
+        - Components
+      summary: Get Component by ID
+      description: Retrieve a specific component by ID
+      operationId: getComponentById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Component ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Component retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentResponse'
+        '400':
+          description: Component not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - Components
+      summary: Update Component
+      description: Update a component
+      operationId: updateComponent
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Component ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateComponentRequest'
+      responses:
+        '200':
+          description: Component updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentResponse'
+        '400':
+          description: Update failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Components
+      summary: Delete Component
+      description: Delete a component
+      operationId: deleteComponent
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Component ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Component deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Deletion failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    # User Schemas
+    CreateUserRequest:
+      type: object
+      required:
+        - name
+        - email
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 255
+          example: John Doe
+        email:
+          type: string
+          format: email
+          example: john@example.com
+
+    UpdateUserRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 255
+          example: Jane Doe
+        email:
+          type: string
+          format: email
+          example: jane@example.com
+
+    UserResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: User created successfully
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            name:
+              type: string
+              example: John Doe
+            email:
+              type: string
+              example: john@example.com
+
+    PaginatedUserResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Users retrieved successfully
+        data:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  email:
+                    type: string
+            page:
+              type: integer
+              example: 1
+            page_size:
+              type: integer
+              example: 10
+            total:
+              type: integer
+              example: 2
+            total_page:
+              type: integer
+              example: 1
+
+    # Building Schemas
+    CreateBuildingRequest:
+      type: object
+      required:
+        - code
+        - name
+      properties:
+        code:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: BLDG001
+        name:
+          type: string
+          minLength: 2
+          maxLength: 255
+          example: Building A
+        location:
+          type: string
+          maxLength: 500
+          example: 123 Main Street
+
+    UpdateBuildingRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: BLDG001
+        name:
+          type: string
+          minLength: 2
+          maxLength: 255
+          example: Building A - Updated
+        location:
+          type: string
+          maxLength: 500
+          example: 456 New Avenue
+
+    BuildingResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Building created successfully
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            code:
+              type: string
+              example: BLDG001
+            name:
+              type: string
+              example: Building A
+            location:
+              type: string
+              example: 123 Main Street
+            created_at:
+              type: integer
+              example: 1703000000
+            updated_at:
+              type: integer
+              example: 1703000000
+
+    BuildingsListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Buildings retrieved successfully
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              code:
+                type: string
+              name:
+                type: string
+              location:
+                type: string
+              created_at:
+                type: integer
+              updated_at:
+                type: integer
+
+    # Floor Schemas
+    CreateFloorRequest:
+      type: object
+      required:
+        - building_id
+        - number
+        - name
+      properties:
+        building_id:
+          type: integer
+          example: 1
+        number:
+          type: integer
+          example: 0
+        name:
+          type: string
+          minLength: 2
+          maxLength: 255
+          example: Ground Floor
+
+    UpdateFloorRequest:
+      type: object
+      properties:
+        number:
+          type: integer
+          example: 1
+        name:
+          type: string
+          minLength: 2
+          maxLength: 255
+          example: First Floor
+
+    FloorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Floor created successfully
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            building_id:
+              type: integer
+              example: 1
+            number:
+              type: integer
+              example: 0
+            name:
+              type: string
+              example: Ground Floor
+            created_at:
+              type: integer
+              example: 1703000000
+            updated_at:
+              type: integer
+              example: 1703000000
+
+    FloorsListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Floors retrieved successfully
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              building_id:
+                type: integer
+              number:
+                type: integer
+              name:
+                type: string
+              created_at:
+                type: integer
+              updated_at:
+                type: integer
+
+    # Room Schemas
+    CreateRoomRequest:
+      type: object
+      required:
+        - floor_id
+        - code
+        - name
+      properties:
+        floor_id:
+          type: integer
+          example: 1
+        code:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: ROOM001
+        name:
+          type: string
+          minLength: 2
+          maxLength: 255
+          example: Conference Room A
+
+    UpdateRoomRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: ROOM002
+        name:
+          type: string
+          minLength: 2
+          maxLength: 255
+          example: Meeting Room B
+
+    RoomResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Room created successfully
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            floor_id:
+              type: integer
+              example: 1
+            code:
+              type: string
+              example: ROOM001
+            name:
+              type: string
+              example: Conference Room A
+            created_at:
+              type: integer
+              example: 1703000000
+            updated_at:
+              type: integer
+              example: 1703000000
+
+    RoomsListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Rooms retrieved successfully
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              floor_id:
+                type: integer
+              code:
+                type: string
+              name:
+                type: string
+              created_at:
+                type: integer
+              updated_at:
+                type: integer
+
+    # Component Category Schemas
+    CreateComponentCategoryRequest:
+      type: object
+      required:
+        - code
+        - name
+      properties:
+        code:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: ELEC
+        name:
+          type: string
+          minLength: 2
+          maxLength: 255
+          example: Electrical Systems
+        description:
+          type: string
+          example: Electrical components and systems
+
+    UpdateComponentCategoryRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: HVAC
+        name:
+          type: string
+          minLength: 2
+          maxLength: 255
+          example: HVAC Systems
+        description:
+          type: string
+          example: Heating, ventilation, and air conditioning
+
+    ComponentCategoryResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Component category created successfully
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            code:
+              type: string
+              example: ELEC
+            name:
+              type: string
+              example: Electrical Systems
+            description:
+              type: string
+              example: Electrical components and systems
+            created_at:
+              type: integer
+              example: 1703000000
+            updated_at:
+              type: integer
+              example: 1703000000
+
+    ComponentCategoriesListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Component categories retrieved successfully
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              code:
+                type: string
+              name:
+                type: string
+              description:
+                type: string
+              created_at:
+                type: integer
+              updated_at:
+                type: integer
+
+    # Component Schemas
+    CreateComponentRequest:
+      type: object
+      required:
+        - room_id
+        - category_id
+        - code
+        - name
+      properties:
+        room_id:
+          type: integer
+          example: 1
+        category_id:
+          type: integer
+          example: 1
+        code:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: COMP001
+        name:
+          type: string
+          minLength: 2
+          maxLength: 255
+          example: Smoke Detector
+        brand:
+          type: string
+          maxLength: 255
+          example: SafetyTech
+        specification:
+          type: string
+          example: Ionization Fire Detector
+        procurement_year:
+          type: integer
+          example: 2023
+
+    UpdateComponentRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: COMP002
+        name:
+          type: string
+          minLength: 2
+          maxLength: 255
+          example: Fire Alarm Detector
+        brand:
+          type: string
+          maxLength: 255
+          example: SafetyTech Pro
+        specification:
+          type: string
+          example: Advanced Fire Detection System
+        procurement_year:
+          type: integer
+          example: 2024
+
+    ComponentResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Component created successfully
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            room_id:
+              type: integer
+              example: 1
+            category_id:
+              type: integer
+              example: 1
+            code:
+              type: string
+              example: COMP001
+            name:
+              type: string
+              example: Smoke Detector
+            brand:
+              type: string
+              example: SafetyTech
+            specification:
+              type: string
+              example: Ionization Fire Detector
+            procurement_year:
+              type: integer
+              example: 2023
+            created_at:
+              type: integer
+              example: 1703000000
+            updated_at:
+              type: integer
+              example: 1703000000
+
+    ComponentsListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Components retrieved successfully
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              room_id:
+                type: integer
+              category_id:
+                type: integer
+              code:
+                type: string
+              name:
+                type: string
+              brand:
+                type: string
+              specification:
+                type: string
+              procurement_year:
+                type: integer
+              created_at:
+                type: integer
+              updated_at:
+                type: integer
+
+    # Common Schemas
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Operation successful
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: Operation failed
+        error:
+          type: string
+          example: Validation error details

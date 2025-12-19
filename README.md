@@ -132,7 +132,53 @@ go build -o incident-report cmd/main.go
 ./incident-report
 ```
 
+## ▶️ Running the Application
+
+### Using Go directly:
+```bash
+go run cmd/main.go
+```
+
+### Using Make (if available):
+```bash
+make run
+```
+
+### Using build binary:
+```bash
+go build -o incident-report cmd/main.go
+./incident-report
+```
+
 The server will start on `http://localhost:8080`
+
+## 📚 API Documentation
+
+### Swagger/OpenAPI Documentation
+
+A comprehensive Swagger/OpenAPI specification is available in [swagger.yaml](swagger.yaml).
+
+#### Accessing Swagger UI
+
+**Option 1: Hosted Swagger UI** (Recommended)
+Once the API is running, access the interactive Swagger UI at:
+```
+http://localhost:8080/swagger
+```
+
+This provides a fully interactive interface to:
+- View all endpoints and their documentation
+- Try out API requests directly from the UI
+- See response examples
+- Explore request/response schemas
+
+**Option 2: Online Swagger Editor**
+- Visit [Swagger Editor](https://editor.swagger.io)
+- Import the `swagger.yaml` file from your local project
+
+**Option 3: Other Tools**
+- **Postman**: Import the swagger.yaml file
+- **Insomnia**: Import the swagger.yaml file  
 
 ## 📡 API Endpoints
 

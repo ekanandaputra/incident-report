@@ -59,6 +59,7 @@ func main() {
 	// Log startup message
 	log.Printf("🚀 Server starting on http://%s:%s", host, port)
 	log.Println("📝 API Documentation:")
+	log.Printf("   🔗 Swagger UI: http://localhost:%s/swagger/index.html", port)
 	log.Println("   POST   /api/v1/users           - Create a new user")
 	log.Println("   GET    /api/v1/users           - Get all users (with pagination)")
 	log.Println("   GET    /api/v1/users/:id       - Get a specific user")

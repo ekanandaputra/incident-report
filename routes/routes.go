@@ -14,6 +14,19 @@ func RegisterRoutes(router *gin.Engine) {
 	// Apply global middleware
 	router.Use(middleware.ErrorHandlerMiddleware())
 
+	// Serve Swagger UI - main endpoint
+	router.GET("/swagger", func(c *gin.Context) {
+		c.File("templates/swagger.html")
+	})
+
+	// Serve Swagger UI HTML page with specific path
+	router.GET("/swagger/index.html", func(c *gin.Context) {
+		c.File("templates/swagger.html")
+	})
+
+	// Serve swagger.yaml file for Swagger UI to load
+	router.StaticFile("/swagger.yaml", "swagger.yaml")
+
 	// Create a service layer instance (dependency injection)
 	userService := services.NewUserService()
 
