@@ -68,31 +68,8 @@ func main() {
 	log.Println("   GET    /api/v1/health         - Health check")
 
 	// Start the server
-	// If TLS cert and key are provided via env vars or present as cert.pem/key.pem,
-	// run the server with TLS. Otherwise fall back to plain HTTP.
-	certFile := os.Getenv("TLS_CERT_FILE")
-	keyFile := os.Getenv("TLS_KEY_FILE")
-
-	// If env vars not set, look for cert.pem/key.pem in project root
-	if certFile == "" || keyFile == "" {
-		if _, err := os.Stat("cert.pem"); err == nil {
-			certFile = "cert.pem"
-		}
-		if _, err := os.Stat("key.pem"); err == nil {
-			keyFile = "key.pem"
-		}
-	}
-
-	addr := host + ":" + port
-	if certFile != "" && keyFile != "" {
-		log.Printf("🔒 Starting HTTPS server on https://%s", addr)
-		if err := router.RunTLS(addr, certFile, keyFile); err != nil {
-			log.Fatalf("Failed to start HTTPS server: %v", err)
-		}
-	} else {
-		log.Printf("Starting HTTP server on http://%s", addr)
-		if err := router.Run(addr); err != nil {
-			log.Fatalf("Failed to start HTTP server: %v", err)
-		}
+	// ListenAndServe blocks until the server is stopped or encounters an error
+	if err := router.Run(host + ":" + port); err != nil {
+		log.Fatalf("Failed to start server: %v", err)
 	}
 }
