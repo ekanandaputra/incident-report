@@ -19,14 +19,16 @@ func NewComponentService() *ComponentService {
 
 // CreateComponent creates a new component in the database
 func (cs *ComponentService) CreateComponent(req *utils.CreateComponentRequest) (*utils.ComponentResponse, error) {
-	if req.RoomID == 0 || req.CategoryID == 0 || req.Code == "" || req.Name == "" {
-		return nil, errors.New("room_id, category_id, code, and name are required")
+	if req.CategoryID == 0 || req.Code == "" || req.Name == "" {
+		return nil, errors.New("category_id, code, and name are required")
 	}
 
-	// Verify room exists
-	var room models.Room
-	if err := config.DB.First(&room, req.RoomID).Error; err != nil {
-		return nil, errors.New("room not found")
+	// Verify room exists if provided
+	if req.RoomID != nil {
+		var room models.Room
+		if err := config.DB.First(&room, *req.RoomID).Error; err != nil {
+			return nil, errors.New("room not found")
+		}
 	}
 
 	// Verify category exists
@@ -172,7 +174,79 @@ func (cs *ComponentService) GetComponentsByCategoryID(categoryID uint, page, pag
 	return responses, total, nil
 }
 
-// UpdateComponent updates an existing component
+// GetAllComponents retrieves all components with pagination and nested building, floor, and room info
+func (cs *ComponentService) GetAllComponents(page, pageSize int) ([]utils.ComponentResponse, int64, error) {
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 || pageSize > 100 {
+		pageSize = 10
+	}
+
+	var components []models.Component
+	var total int64
+
+	if err := config.DB.Model(&models.Component{}).Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	offset := (page - 1) * pageSize
+	result := config.DB.Preload("Room.Floor.Building").Offset(offset).Limit(pageSize).Find(&components)
+	if result.Error != nil {
+		return nil, 0, result.Error
+	}
+
+	var responses []utils.ComponentResponse
+	for _, component := range components {
+		response := utils.ComponentResponse{
+			ID:              component.ID,
+			RoomID:          component.RoomID,
+			CategoryID:      component.CategoryID,
+			Code:            component.Code,
+			Name:            component.Name,
+			Brand:           component.Brand,
+			Specification:   component.Specification,
+			ProcurementYear: component.ProcurementYear,
+			CreatedAt:       component.CreatedAt,
+			UpdatedAt:       component.UpdatedAt,
+		}
+
+		// if component.Room != nil && component.Room.ID != 0 {
+		// 	response.Room = &utils.RoomResponse{
+		// 		ID:        component.Room.ID,
+		// 		FloorID:   component.Room.FloorID,
+		// 		Code:      component.Room.Code,
+		// 		Name:      component.Room.Name,
+		// 		CreatedAt: component.Room.CreatedAt,
+		// 		UpdatedAt: component.Room.UpdatedAt,
+		// 	}
+		// 	if component.Room.Floor != nil && component.Room.Floor.ID != 0 {
+		// 		response.Room.Floor = &utils.FloorResponse{
+		// 			ID:          component.Room.Floor.ID,
+		// 			BuildingID:  component.Room.Floor.BuildingID,
+		// 			FloorNumber: component.Room.Floor.Number,
+		// 			Name:        component.Room.Floor.Name,
+		// 			CreatedAt:   component.Room.Floor.CreatedAt,
+		// 			UpdatedAt:   component.Room.Floor.UpdatedAt,
+		// 		}
+		// 		if component.Room.Floor.Building != nil && component.Room.Floor.Building.ID != 0 {
+		// 			response.Room.Floor.Building = &utils.BuildingResponse{
+		// 				ID:        component.Room.Floor.Building.ID,
+		// 				Code:      component.Room.Floor.Building.Code,
+		// 				Name:      component.Room.Floor.Building.Name,
+		// 				Location:  component.Room.Floor.Building.Location,
+		// 				CreatedAt: component.Room.Floor.Building.CreatedAt,
+		// 				UpdatedAt: component.Room.Floor.Building.UpdatedAt,
+		// 			}
+		// 		}
+		// 	}
+		// }
+
+		responses = append(responses, response)
+	}
+
+	return responses, total, nil
+}
 func (cs *ComponentService) UpdateComponent(id uint, req *utils.UpdateComponentRequest) (*utils.ComponentResponse, error) {
 	var component models.Component
 
@@ -232,4 +306,41 @@ func (cs *ComponentService) DeleteComponent(id uint) error {
 
 	result = config.DB.Delete(&component)
 	return result.Error
+}
+
+// AssignRoomToComponent assigns a room to an existing component
+func (cs *ComponentService) AssignRoomToComponent(componentID uint, req *utils.AssignRoomRequest) (*utils.ComponentResponse, error) {
+	var component models.Component
+
+	result := config.DB.First(&component, componentID)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, errors.New("component not found")
+		}
+		return nil, result.Error
+	}
+
+	// Verify room exists
+	var room models.Room
+	if err := config.DB.First(&room, req.RoomID).Error; err != nil {
+		return nil, errors.New("room not found")
+	}
+
+	component.RoomID = &req.RoomID
+	if err := config.DB.Save(&component).Error; err != nil {
+		return nil, err
+	}
+
+	return &utils.ComponentResponse{
+		ID:              component.ID,
+		RoomID:          component.RoomID,
+		CategoryID:      component.CategoryID,
+		Code:            component.Code,
+		Name:            component.Name,
+		Brand:           component.Brand,
+		Specification:   component.Specification,
+		ProcurementYear: component.ProcurementYear,
+		CreatedAt:       component.CreatedAt,
+		UpdatedAt:       component.UpdatedAt,
+	}, nil
 }

@@ -8,7 +8,7 @@ type Component struct {
 	ID uint `gorm:"primaryKey;autoIncrement" json:"id"`
 
 	// Foreign key to Room
-	RoomID uint `gorm:"not null;index" json:"room_id" binding:"required"`
+	RoomID *uint `gorm:"nullable;index" json:"room_id" binding:"omitempty"`
 
 	// Foreign key to ComponentCategory
 	CategoryID uint `gorm:"not null;index" json:"category_id" binding:"required"`
@@ -29,7 +29,7 @@ type Component struct {
 	ProcurementYear int `json:"procurement_year"`
 
 	// Relationship: Component belongs to Room
-	Room Room `gorm:"foreignKey:RoomID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"room,omitempty"`
+	Room *Room `gorm:"foreignKey:RoomID" json:"room,omitempty"`
 
 	// Relationship: Component belongs to ComponentCategory
 	Category ComponentCategory `gorm:"foreignKey:CategoryID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"category,omitempty"`

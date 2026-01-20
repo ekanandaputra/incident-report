@@ -886,6 +886,41 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+    get:
+      tags:
+        - Components
+      summary: Get All Components
+      description: Retrieve all components with pagination and nested building, floor, and room info
+      operationId: getAllComponents
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          description: Page size
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Components retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentsListResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /components/{id}:
     get:
       tags:
@@ -969,6 +1004,40 @@ paths:
                 $ref: '#/components/schemas/SuccessResponse'
         '400':
           description: Deletion failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /components/{id}/assign-room:
+    put:
+      tags:
+        - Components
+      summary: Assign Room to Component
+      description: Assign a room to an existing component
+      operationId: assignRoomToComponent
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Component ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignRoomRequest'
+      responses:
+        '200':
+          description: Room assigned to component successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentResponse'
+        '400':
+          description: Assignment failed
           content:
             application/json:
               schema:
@@ -1693,13 +1762,13 @@ components:
     CreateComponentRequest:
       type: object
       required:
-        - room_id
         - category_id
         - code
         - name
       properties:
         room_id:
           type: integer
+          nullable: true
           example: 1
         category_id:
           type: integer
@@ -1724,6 +1793,15 @@ components:
         procurement_year:
           type: integer
           example: 2023
+
+    AssignRoomRequest:
+      type: object
+      required:
+        - room_id
+      properties:
+        room_id:
+          type: integer
+          example: 1
 
     UpdateComponentRequest:
       type: object
@@ -1766,6 +1844,7 @@ components:
               example: 1
             room_id:
               type: integer
+              nullable: true
               example: 1
             category_id:
               type: integer
@@ -1785,6 +1864,8 @@ components:
             procurement_year:
               type: integer
               example: 2023
+            room:
+              $ref: '#/components/schemas/RoomResponse'
             created_at:
               type: integer
               example: 1703000000
@@ -1810,6 +1891,7 @@ components:
                 type: integer
               room_id:
                 type: integer
+                nullable: true
               category_id:
                 type: integer
               code:
@@ -1822,6 +1904,8 @@ components:
                 type: string
               procurement_year:
                 type: integer
+              room:
+                $ref: '#/components/schemas/RoomResponse'
               created_at:
                 type: integer
               updated_at:

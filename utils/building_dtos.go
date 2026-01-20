@@ -108,7 +108,7 @@ type ComponentCategoryResponse struct {
 
 // CreateComponentRequest represents component creation request
 type CreateComponentRequest struct {
-	RoomID          uint   `json:"room_id" binding:"required"`
+	RoomID          *uint  `json:"room_id,omitempty"`
 	CategoryID      uint   `json:"category_id" binding:"required"`
 	Code            string `json:"code" binding:"required,min=1,max=100"`
 	Name            string `json:"name" binding:"required,min=2,max=255"`
@@ -128,14 +128,20 @@ type UpdateComponentRequest struct {
 
 // ComponentResponse represents component response
 type ComponentResponse struct {
-	ID              uint   `json:"id"`
-	RoomID          uint   `json:"room_id"`
-	CategoryID      uint   `json:"category_id"`
-	Code            string `json:"code"`
-	Name            string `json:"name"`
-	Brand           string `json:"brand"`
-	Specification   string `json:"specification"`
-	ProcurementYear int    `json:"procurement_year"`
-	CreatedAt       int64  `json:"created_at"`
-	UpdatedAt       int64  `json:"updated_at"`
+	ID              uint          `json:"id"`
+	RoomID          *uint         `json:"room_id,omitempty"`
+	Room            *RoomResponse `json:"room,omitempty"`
+	CategoryID      uint          `json:"category_id"`
+	Code            string        `json:"code"`
+	Name            string        `json:"name"`
+	Brand           string        `json:"brand"`
+	Specification   string        `json:"specification"`
+	ProcurementYear int           `json:"procurement_year"`
+	CreatedAt       int64         `json:"created_at"`
+	UpdatedAt       int64         `json:"updated_at"`
+}
+
+// AssignRoomRequest represents the request payload for assigning a room to a component
+type AssignRoomRequest struct {
+	RoomID uint `json:"room_id" binding:"required"`
 }

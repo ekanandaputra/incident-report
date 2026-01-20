@@ -97,10 +97,10 @@ func (cc *ComponentController) GetComponentsByRoom(c *gin.Context) {
 
 	page := query.Page
 	pageSize := query.PageSize
-	if page <= 0 {
+	if page == 0 {
 		page = 1
 	}
-	if pageSize <= 0 || pageSize > 100 {
+	if pageSize == 0 {
 		pageSize = 10
 	}
 
@@ -110,12 +110,14 @@ func (cc *ComponentController) GetComponentsByRoom(c *gin.Context) {
 		return
 	}
 
+	totalPage := (int(total) + pageSize - 1) / pageSize
+
 	response := utils.PaginatedResponse{
 		Data:      components,
-		Total:     total,
 		Page:      page,
 		PageSize:  pageSize,
-		TotalPage: int((total + int64(pageSize) - 1) / int64(pageSize)),
+		Total:     total,
+		TotalPage: totalPage,
 	}
 
 	utils.SuccessResponse(c, http.StatusOK, "Components retrieved successfully", response)
@@ -146,10 +148,10 @@ func (cc *ComponentController) GetComponentsByCategory(c *gin.Context) {
 
 	page := query.Page
 	pageSize := query.PageSize
-	if page <= 0 {
+	if page == 0 {
 		page = 1
 	}
-	if pageSize <= 0 || pageSize > 100 {
+	if pageSize == 0 {
 		pageSize = 10
 	}
 
@@ -159,15 +161,93 @@ func (cc *ComponentController) GetComponentsByCategory(c *gin.Context) {
 		return
 	}
 
+	totalPage := (int(total) + pageSize - 1) / pageSize
+
 	response := utils.PaginatedResponse{
 		Data:      components,
-		Total:     total,
 		Page:      page,
 		PageSize:  pageSize,
-		TotalPage: int((total + int64(pageSize) - 1) / int64(pageSize)),
+		Total:     total,
+		TotalPage: totalPage,
 	}
 
 	utils.SuccessResponse(c, http.StatusOK, "Components retrieved successfully", response)
+}
+
+// GetAllComponents handles GET /api/v1/components
+// @Summary Get all components
+// @Description Retrieves all components with pagination and nested building, floor, and room info
+// @Produce json
+// @Param page query int false "Page number" default(1)
+// @Param page_size query int false "Records per page" default(10)
+// @Success 200 {object} utils.PaginatedResponse
+// @Failure 400 {object} map[string]interface{}
+// @Router /api/v1/components [get]
+func (cc *ComponentController) GetAllComponents(c *gin.Context) {
+	var pagination utils.PaginationQuery
+
+	if err := c.ShouldBindQuery(&pagination); err != nil {
+		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid query parameters", err.Error())
+		return
+	}
+
+	if pagination.Page == 0 {
+		pagination.Page = 1
+	}
+	if pagination.PageSize == 0 {
+		pagination.PageSize = 10
+	}
+
+	components, total, err := cc.service.GetAllComponents(pagination.Page, pagination.PageSize)
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to fetch components", err.Error())
+		return
+	}
+
+	totalPage := (int(total) + pagination.PageSize - 1) / pagination.PageSize
+
+	response := utils.PaginatedResponse{
+		Data:      components,
+		Page:      pagination.Page,
+		PageSize:  pagination.PageSize,
+		Total:     total,
+		TotalPage: totalPage,
+	}
+
+	utils.SuccessResponse(c, http.StatusOK, "Components retrieved successfully", response)
+}
+
+// AssignRoomToComponent handles PUT /api/v1/components/:id/assign-room
+// @Summary Assign a room to a component
+// @Description Assigns a room to an existing component
+// @Accept json
+// @Produce json
+// @Param id path int true "Component ID"
+// @Param request body utils.AssignRoomRequest true "Room assignment details"
+// @Success 200 {object} utils.ComponentResponse
+// @Failure 400 {object} map[string]interface{}
+// @Failure 404 {object} map[string]interface{}
+// @Router /api/v1/components/{id}/assign-room [put]
+func (cc *ComponentController) AssignRoomToComponent(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid component ID", err.Error())
+		return
+	}
+
+	var req utils.AssignRoomRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid request format", err.Error())
+		return
+	}
+
+	component, err := cc.service.AssignRoomToComponent(uint(id), &req)
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusBadRequest, "Failed to assign room to component", err.Error())
+		return
+	}
+
+	utils.SuccessResponse(c, http.StatusOK, "Room assigned to component successfully", component)
 }
 
 // UpdateComponent handles PUT /api/v1/components/:id

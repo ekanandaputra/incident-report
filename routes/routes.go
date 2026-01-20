@@ -161,14 +161,18 @@ func RegisterRoutes(router *gin.Engine) {
 
 		// Component routes
 		// POST   /api/v1/components           - Create a new component
+		// GET    /api/v1/components           - Get all components (with pagination and nested info)
 		// GET    /api/v1/components/:id       - Get a specific component
 		// PUT    /api/v1/components/:id       - Update a specific component
+		// PUT    /api/v1/components/:id/assign-room - Assign room to component
 		// DELETE /api/v1/components/:id       - Delete a specific component
 		components := v1.Group("/components")
 		{
 			components.POST("", componentController.CreateComponent)
+			components.GET("", componentController.GetAllComponents)
 			components.GET("/:id", componentController.GetComponent)
 			components.PUT("/:id", componentController.UpdateComponent)
+			components.PUT("/:id/assign-room", componentController.AssignRoomToComponent)
 			components.DELETE("/:id", componentController.DeleteComponent)
 		}
 
