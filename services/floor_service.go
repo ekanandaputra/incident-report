@@ -19,8 +19,8 @@ func NewFloorService() *FloorService {
 
 // CreateFloor creates a new floor in the database
 func (fs *FloorService) CreateFloor(req *utils.CreateFloorRequest) (*utils.FloorResponse, error) {
-	if req.BuildingID == 0 || req.Number == 0 || req.Name == "" {
-		return nil, errors.New("building_id, number, and name are required")
+	if req.BuildingID == 0 || req.FloorNumber == 0 || req.Name == "" {
+		return nil, errors.New("building_id, floor_number, and name are required")
 	}
 
 	// Verify building exists
@@ -31,7 +31,7 @@ func (fs *FloorService) CreateFloor(req *utils.CreateFloorRequest) (*utils.Floor
 
 	floor := models.Floor{
 		BuildingID: req.BuildingID,
-		Number:     req.Number,
+		Number:     req.FloorNumber,
 		Name:       req.Name,
 	}
 
@@ -41,12 +41,12 @@ func (fs *FloorService) CreateFloor(req *utils.CreateFloorRequest) (*utils.Floor
 	}
 
 	return &utils.FloorResponse{
-		ID:         floor.ID,
-		BuildingID: floor.BuildingID,
-		Number:     floor.Number,
-		Name:       floor.Name,
-		CreatedAt:  floor.CreatedAt,
-		UpdatedAt:  floor.UpdatedAt,
+		ID:          floor.ID,
+		BuildingID:  floor.BuildingID,
+		FloorNumber: floor.Number,
+		Name:        floor.Name,
+		CreatedAt:   floor.CreatedAt,
+		UpdatedAt:   floor.UpdatedAt,
 	}, nil
 }
 
@@ -63,12 +63,12 @@ func (fs *FloorService) GetFloorByID(id uint) (*utils.FloorResponse, error) {
 	}
 
 	return &utils.FloorResponse{
-		ID:         floor.ID,
-		BuildingID: floor.BuildingID,
-		Number:     floor.Number,
-		Name:       floor.Name,
-		CreatedAt:  floor.CreatedAt,
-		UpdatedAt:  floor.UpdatedAt,
+		ID:          floor.ID,
+		BuildingID:  floor.BuildingID,
+		FloorNumber: floor.Number,
+		Name:        floor.Name,
+		CreatedAt:   floor.CreatedAt,
+		UpdatedAt:   floor.UpdatedAt,
 	}, nil
 }
 
@@ -97,12 +97,57 @@ func (fs *FloorService) GetFloorsByBuildingID(buildingID uint, page, pageSize in
 	var responses []utils.FloorResponse
 	for _, floor := range floors {
 		responses = append(responses, utils.FloorResponse{
-			ID:         floor.ID,
-			BuildingID: floor.BuildingID,
-			Number:     floor.Number,
-			Name:       floor.Name,
-			CreatedAt:  floor.CreatedAt,
-			UpdatedAt:  floor.UpdatedAt,
+			ID:          floor.ID,
+			BuildingID:  floor.BuildingID,
+			FloorNumber: floor.Number,
+			Name:        floor.Name,
+			CreatedAt:   floor.CreatedAt,
+			UpdatedAt:   floor.UpdatedAt,
+		})
+	}
+
+	return responses, total, nil
+}
+
+// GetAllFloors retrieves all floors with pagination and building info
+func (fs *FloorService) GetAllFloors(page, pageSize int) ([]utils.FloorResponse, int64, error) {
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 || pageSize > 100 {
+		pageSize = 10
+	}
+
+	var floors []models.Floor
+	var total int64
+
+	if err := config.DB.Model(&models.Floor{}).Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	offset := (page - 1) * pageSize
+	result := config.DB.Preload("Building").Offset(offset).Limit(pageSize).Find(&floors)
+	if result.Error != nil {
+		return nil, 0, result.Error
+	}
+
+	var responses []utils.FloorResponse
+	for _, floor := range floors {
+		buildingResp := &utils.BuildingResponse{
+			ID:        floor.Building.ID,
+			Code:      floor.Building.Code,
+			Name:      floor.Building.Name,
+			Location:  floor.Building.Location,
+			CreatedAt: floor.Building.CreatedAt,
+		}
+		responses = append(responses, utils.FloorResponse{
+			ID:          floor.ID,
+			BuildingID:  floor.BuildingID,
+			Building:    buildingResp,
+			FloorNumber: floor.Number,
+			Name:        floor.Name,
+			CreatedAt:   floor.CreatedAt,
+			UpdatedAt:   floor.UpdatedAt,
 		})
 	}
 
@@ -121,8 +166,8 @@ func (fs *FloorService) UpdateFloor(id uint, req *utils.UpdateFloorRequest) (*ut
 		return nil, result.Error
 	}
 
-	if req.Number != 0 {
-		floor.Number = req.Number
+	if req.FloorNumber != 0 {
+		floor.Number = req.FloorNumber
 	}
 	if req.Name != "" {
 		floor.Name = req.Name
@@ -133,12 +178,12 @@ func (fs *FloorService) UpdateFloor(id uint, req *utils.UpdateFloorRequest) (*ut
 	}
 
 	return &utils.FloorResponse{
-		ID:         floor.ID,
-		BuildingID: floor.BuildingID,
-		Number:     floor.Number,
-		Name:       floor.Name,
-		CreatedAt:  floor.CreatedAt,
-		UpdatedAt:  floor.UpdatedAt,
+		ID:          floor.ID,
+		BuildingID:  floor.BuildingID,
+		FloorNumber: floor.Number,
+		Name:        floor.Name,
+		CreatedAt:   floor.CreatedAt,
+		UpdatedAt:   floor.UpdatedAt,
 	}, nil
 }
 

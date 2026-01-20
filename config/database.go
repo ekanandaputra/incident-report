@@ -81,6 +81,10 @@ func AutoMigrate() error {
 		return err
 	}
 
+	if err := DB.AutoMigrate(&models.Report{}); err != nil {
+		return err
+	}
+
 	log.Println("Database migration completed successfully")
 	return nil
 }

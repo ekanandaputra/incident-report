@@ -40,6 +40,10 @@ func RegisterRoutes(router *gin.Engine) {
 	componentCategoryController := controllers.NewComponentCategoryController()
 	componentController := controllers.NewComponentController()
 
+	// Create report management controller
+	reportService := services.NewReportService()
+	reportController := controllers.NewReportController(reportService)
+
 	// API v1 routes
 	v1 := router.Group("/api/v1")
 	{
@@ -97,12 +101,14 @@ func RegisterRoutes(router *gin.Engine) {
 
 		// Floor routes
 		// POST   /api/v1/floors           - Create a new floor
+		// GET    /api/v1/floors           - Get all floors (with pagination)
 		// GET    /api/v1/floors/:id       - Get a specific floor
 		// PUT    /api/v1/floors/:id       - Update a specific floor
 		// DELETE /api/v1/floors/:id       - Delete a specific floor
 		floors := v1.Group("/floors")
 		{
 			floors.POST("", floorController.CreateFloor)
+			floors.GET("", floorController.GetAllFloors)
 
 			// Rooms within a floor - Register nested routes BEFORE wildcard routes
 			// GET    /api/v1/floors/:id/rooms           - Get all rooms on a floor
@@ -162,6 +168,22 @@ func RegisterRoutes(router *gin.Engine) {
 			components.GET("/:id", componentController.GetComponent)
 			components.PUT("/:id", componentController.UpdateComponent)
 			components.DELETE("/:id", componentController.DeleteComponent)
+		}
+
+		// Report routes
+		// POST   /api/v1/reports           - Create a new report
+		// GET    /api/v1/reports           - Get all reports (with pagination)
+		// GET    /api/v1/reports/:id       - Get a specific report
+		// PUT    /api/v1/reports/:id       - Update a specific report
+		// DELETE /api/v1/reports/:id       - Delete a specific report
+		reports := v1.Group("/reports")
+		{
+			reports.POST("", reportController.CreateReport)
+			reports.GET("", reportController.GetAllReports)
+			reports.GET("/:id", reportController.GetReport)
+			reports.PUT("/:id", reportController.UpdateReport)
+			reports.DELETE("/:id", reportController.DeleteReport)
+			reports.PUT("/:id/assign-user", reportController.AssignUserToReport)
 		}
 	}
 }

@@ -33,3 +33,38 @@ type PaginatedResponse struct {
 	Total     int64       `json:"total"`
 	TotalPage int         `json:"total_page"`
 }
+
+// CreateReportRequest represents the request payload for creating a report
+type CreateReportRequest struct {
+	Name        string `json:"name" binding:"required"`
+	RoomID      uint   `json:"room_id" binding:"required"`
+	UserID      *uint  `json:"user_id,omitempty"`
+	ComponentID uint   `json:"component_id" binding:"required"`
+	Status      string `json:"status" binding:"required,oneof=PENDING IN_PROGRESS COMPLETED"`
+}
+
+// UpdateReportRequest represents the request payload for updating a report
+type UpdateReportRequest struct {
+	Name        string `json:"name" binding:"omitempty"`
+	RoomID      uint   `json:"room_id" binding:"omitempty"`
+	UserID      *uint  `json:"user_id" binding:"omitempty"`
+	ComponentID uint   `json:"component_id" binding:"omitempty"`
+	Status      string `json:"status" binding:"omitempty,oneof=PENDING IN_PROGRESS COMPLETED"`
+}
+
+// ReportResponse represents the response payload for a report
+type ReportResponse struct {
+	ID          uint   `json:"id"`
+	Name        string `json:"name"`
+	RoomID      uint   `json:"room_id"`
+	UserID      *uint  `json:"user_id,omitempty"`
+	ComponentID uint   `json:"component_id"`
+	Status      string `json:"status"`
+	CreatedAt   string `json:"created_at"`
+	UpdatedAt   string `json:"updated_at"`
+}
+
+// AssignUserRequest represents the request payload for assigning a user to a report
+type AssignUserRequest struct {
+	UserID uint `json:"user_id" binding:"required"`
+}

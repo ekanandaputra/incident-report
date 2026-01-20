@@ -30,6 +30,8 @@ tags:
     description: Component category operations
   - name: Components
     description: Component management operations
+  - name: Reports
+    description: Report management operations
 
 paths:
   /health:
@@ -379,6 +381,42 @@ paths:
                 $ref: '#/components/schemas/FloorResponse'
         '400':
           description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      tags:
+        - Floors
+      summary: Get All Floors
+      description: Get all floors with building information and pagination
+      operationId: getAllFloors
+      parameters:
+        - name: page
+          in: query
+          description: Page number (default 1)
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: page_size
+          in: query
+          description: Records per page (default 10, max 100)
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+      responses:
+        '200':
+          description: Floors retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedFloorResponse'
+        '400':
+          description: Invalid query parameters
           content:
             application/json:
               schema:
@@ -900,6 +938,191 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /reports:
+    post:
+      tags:
+        - Reports
+      summary: Create Report
+      description: Create a new report
+      operationId: createReport
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReportRequest'
+      responses:
+        '201':
+          description: Report created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      tags:
+        - Reports
+      summary: Get All Reports
+      description: Get all reports with pagination support
+      operationId: getAllReports
+      parameters:
+        - name: page
+          in: query
+          description: Page number (default 1)
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: page_size
+          in: query
+          description: Records per page (default 10, max 100)
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+      responses:
+        '200':
+          description: Reports retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedReportResponse'
+        '400':
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /reports/{id}:
+    get:
+      tags:
+        - Reports
+      summary: Get Report by ID
+      description: Retrieve a specific report by ID
+      operationId: getReportById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Report ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Report retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportResponse'
+        '400':
+          description: Report not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - Reports
+      summary: Update Report
+      description: Update a report (partial update allowed)
+      operationId: updateReport
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Report ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateReportRequest'
+      responses:
+        '200':
+          description: Report updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportResponse'
+        '400':
+          description: Update failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Reports
+      summary: Delete Report
+      description: Delete a report from the system
+      operationId: deleteReport
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Report ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Report deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Deletion failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /reports/{id}/assign-user:
+    put:
+      tags:
+        - Reports
+      summary: Assign User to Report
+      description: Assign a user to an existing report
+      operationId: assignUserToReport
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Report ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignUserRequest'
+      responses:
+        '200':
+          description: User assigned to report successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportResponse'
+        '400':
+          description: Assignment failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
   schemas:
     # User Schemas
@@ -1099,7 +1322,7 @@ components:
         building_id:
           type: integer
           example: 1
-        number:
+        floor_number:
           type: integer
           example: 0
         name:
@@ -1111,7 +1334,7 @@ components:
     UpdateFloorRequest:
       type: object
       properties:
-        number:
+        floor_number:
           type: integer
           example: 1
         name:
@@ -1138,7 +1361,9 @@ components:
             building_id:
               type: integer
               example: 1
-            number:
+            building:
+              $ref: '#/components/schemas/BuildingResponse'
+            floor_number:
               type: integer
               example: 0
             name:
@@ -1169,7 +1394,7 @@ components:
                 type: integer
               building_id:
                 type: integer
-              number:
+              floor_number:
                 type: integer
               name:
                 type: string
@@ -1177,6 +1402,35 @@ components:
                 type: integer
               updated_at:
                 type: integer
+
+    PaginatedFloorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Floors retrieved successfully
+        data:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/FloorResponse'
+            page:
+              type: integer
+              example: 1
+            page_size:
+              type: integer
+              example: 10
+            total:
+              type: integer
+              example: 2
+            total_page:
+              type: integer
+              example: 1
 
     # Room Schemas
     CreateRoomRequest:
@@ -1505,6 +1759,150 @@ components:
                 type: integer
               updated_at:
                 type: integer
+
+    # Report Schemas
+    CreateReportRequest:
+      type: object
+      required:
+        - name
+        - room_id
+        - component_id
+        - status
+      properties:
+        name:
+          type: string
+          example: Broken light fixture
+        room_id:
+          type: integer
+          example: 1
+        user_id:
+          type: integer
+          example: 1
+        component_id:
+          type: integer
+          example: 1
+        status:
+          type: string
+          enum: [PENDING, IN_PROGRESS, COMPLETED]
+          example: PENDING
+
+    UpdateReportRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Fixed light fixture
+        room_id:
+          type: integer
+          example: 1
+        user_id:
+          type: integer
+          example: 1
+        component_id:
+          type: integer
+          example: 1
+        status:
+          type: string
+          enum: [PENDING, IN_PROGRESS, COMPLETED]
+          example: COMPLETED
+
+    AssignUserRequest:
+      type: object
+      required:
+        - user_id
+      properties:
+        user_id:
+          type: integer
+          example: 1
+
+    ReportResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Report created successfully
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            name:
+              type: string
+              example: Broken light fixture
+            room_id:
+              type: integer
+              example: 1
+            user_id:
+              type: integer
+              nullable: true
+              example: 1
+            component_id:
+              type: integer
+              example: 1
+            status:
+              type: string
+              example: PENDING
+            created_at:
+              type: string
+              format: date-time
+              example: "2023-12-01T10:00:00Z"
+            updated_at:
+              type: string
+              format: date-time
+              example: "2023-12-01T10:00:00Z"
+
+    PaginatedReportResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Reports retrieved successfully
+        data:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  room_id:
+                    type: integer
+                  user_id:
+                    type: integer
+                    nullable: true
+                  component_id:
+                    type: integer
+                  status:
+                    type: string
+                  created_at:
+                    type: string
+                    format: date-time
+                  updated_at:
+                    type: string
+                    format: date-time
+            page:
+              type: integer
+              example: 1
+            page_size:
+              type: integer
+              example: 10
+            total:
+              type: integer
+              example: 2
+            total_page:
+              type: integer
+              example: 1
 
     # Common Schemas
     SuccessResponse:

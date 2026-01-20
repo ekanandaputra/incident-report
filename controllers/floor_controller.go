@@ -48,6 +48,49 @@ func (fc *FloorController) CreateFloor(c *gin.Context) {
 	utils.SuccessResponse(c, http.StatusCreated, "Floor created successfully", floor)
 }
 
+// GetAllFloors handles GET /api/v1/floors
+// @Summary Get all floors
+// @Description Retrieves all floors with building information and pagination
+// @Produce json
+// @Param page query int false "Page number" default(1)
+// @Param page_size query int false "Records per page" default(10)
+// @Success 200 {object} utils.PaginatedResponse
+// @Failure 400 {object} map[string]interface{}
+// @Router /api/v1/floors [get]
+func (fc *FloorController) GetAllFloors(c *gin.Context) {
+	var pagination utils.PaginationQuery
+
+	if err := c.ShouldBindQuery(&pagination); err != nil {
+		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid query parameters", err.Error())
+		return
+	}
+
+	if pagination.Page == 0 {
+		pagination.Page = 1
+	}
+	if pagination.PageSize == 0 {
+		pagination.PageSize = 10
+	}
+
+	floors, total, err := fc.service.GetAllFloors(pagination.Page, pagination.PageSize)
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to fetch floors", err.Error())
+		return
+	}
+
+	totalPage := (int(total) + pagination.PageSize - 1) / pagination.PageSize
+
+	response := utils.PaginatedResponse{
+		Data:      floors,
+		Page:      pagination.Page,
+		PageSize:  pagination.PageSize,
+		Total:     total,
+		TotalPage: totalPage,
+	}
+
+	utils.SuccessResponse(c, http.StatusOK, "Floors retrieved successfully", response)
+}
+
 // GetFloor handles GET /api/v1/floors/:id
 // @Summary Get floor by ID
 // @Description Retrieves a specific floor by its ID

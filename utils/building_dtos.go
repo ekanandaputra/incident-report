@@ -30,25 +30,26 @@ type BuildingResponse struct {
 
 // CreateFloorRequest represents floor creation request
 type CreateFloorRequest struct {
-	BuildingID uint   `json:"building_id" binding:"required"`
-	Number     int    `json:"number" binding:"required"`
-	Name       string `json:"name" binding:"required,min=2,max=255"`
+	BuildingID  uint   `json:"building_id" binding:"required"`
+	FloorNumber int    `json:"floor_number" binding:"required"`
+	Name        string `json:"name" binding:"required,min=2,max=255"`
 }
 
 // UpdateFloorRequest represents floor update request (partial)
 type UpdateFloorRequest struct {
-	Number int    `json:"number" binding:"omitempty"`
-	Name   string `json:"name" binding:"omitempty,min=2,max=255"`
+	FloorNumber int    `json:"floor_number" binding:"omitempty"`
+	Name        string `json:"name" binding:"omitempty,min=2,max=255"`
 }
 
 // FloorResponse represents floor response
 type FloorResponse struct {
-	ID         uint   `json:"id"`
-	BuildingID uint   `json:"building_id"`
-	Number     int    `json:"number"`
-	Name       string `json:"name"`
-	CreatedAt  int64  `json:"created_at"`
-	UpdatedAt  int64  `json:"updated_at"`
+	ID          uint              `json:"id"`
+	BuildingID  uint              `json:"building_id"`
+	Building    *BuildingResponse `json:"building,omitempty"`
+	FloorNumber int               `json:"floor_number"`
+	Name        string            `json:"name"`
+	CreatedAt   int64             `json:"created_at"`
+	UpdatedAt   int64             `json:"updated_at"`
 }
 
 // ===== Room DTOs =====
