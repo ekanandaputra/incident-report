@@ -69,12 +69,13 @@ type UpdateRoomRequest struct {
 
 // RoomResponse represents room response
 type RoomResponse struct {
-	ID        uint   `json:"id"`
-	FloorID   uint   `json:"floor_id"`
-	Code      string `json:"code"`
-	Name      string `json:"name"`
-	CreatedAt int64  `json:"created_at"`
-	UpdatedAt int64  `json:"updated_at"`
+	ID        uint           `json:"id"`
+	FloorID   uint           `json:"floor_id"`
+	Floor     *FloorResponse `json:"floor,omitempty"`
+	Code      string         `json:"code"`
+	Name      string         `json:"name"`
+	CreatedAt int64          `json:"created_at"`
+	UpdatedAt int64          `json:"updated_at"`
 }
 
 // ===== ComponentCategory DTOs =====

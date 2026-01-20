@@ -48,6 +48,49 @@ func (rc *RoomController) CreateRoom(c *gin.Context) {
 	utils.SuccessResponse(c, http.StatusCreated, "Room created successfully", room)
 }
 
+// GetAllRooms handles GET /api/v1/rooms
+// @Summary Get all rooms
+// @Description Retrieves all rooms with floor and building information and pagination
+// @Produce json
+// @Param page query int false "Page number" default(1)
+// @Param page_size query int false "Records per page" default(10)
+// @Success 200 {object} utils.PaginatedResponse
+// @Failure 400 {object} map[string]interface{}
+// @Router /api/v1/rooms [get]
+func (rc *RoomController) GetAllRooms(c *gin.Context) {
+	var pagination utils.PaginationQuery
+
+	if err := c.ShouldBindQuery(&pagination); err != nil {
+		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid query parameters", err.Error())
+		return
+	}
+
+	if pagination.Page == 0 {
+		pagination.Page = 1
+	}
+	if pagination.PageSize == 0 {
+		pagination.PageSize = 10
+	}
+
+	rooms, total, err := rc.service.GetAllRooms(pagination.Page, pagination.PageSize)
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to fetch rooms", err.Error())
+		return
+	}
+
+	totalPage := (int(total) + pagination.PageSize - 1) / pagination.PageSize
+
+	response := utils.PaginatedResponse{
+		Data:      rooms,
+		Page:      pagination.Page,
+		PageSize:  pagination.PageSize,
+		Total:     total,
+		TotalPage: totalPage,
+	}
+
+	utils.SuccessResponse(c, http.StatusOK, "Rooms retrieved successfully", response)
+}
+
 // GetRoom handles GET /api/v1/rooms/:id
 // @Summary Get room by ID
 // @Description Retrieves a specific room by its ID

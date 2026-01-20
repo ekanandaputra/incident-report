@@ -121,12 +121,14 @@ func RegisterRoutes(router *gin.Engine) {
 
 		// Room routes
 		// POST   /api/v1/rooms           - Create a new room
+		// GET    /api/v1/rooms           - Get all rooms (with pagination)
 		// GET    /api/v1/rooms/:id       - Get a specific room
 		// PUT    /api/v1/rooms/:id       - Update a specific room
 		// DELETE /api/v1/rooms/:id       - Delete a specific room
 		rooms := v1.Group("/rooms")
 		{
 			rooms.POST("", roomController.CreateRoom)
+			rooms.GET("", roomController.GetAllRooms)
 
 			// Components within a room - Register nested routes BEFORE wildcard routes
 			// GET    /api/v1/rooms/:id/components           - Get all components in a room

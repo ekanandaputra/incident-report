@@ -109,6 +109,60 @@ func (rs *RoomService) GetRoomsByFloorID(floorID uint, page, pageSize int) ([]ut
 	return responses, total, nil
 }
 
+// GetAllRooms retrieves all rooms with pagination and floor/building info
+func (rs *RoomService) GetAllRooms(page, pageSize int) ([]utils.RoomResponse, int64, error) {
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 || pageSize > 100 {
+		pageSize = 10
+	}
+
+	var rooms []models.Room
+	var total int64
+
+	if err := config.DB.Model(&models.Room{}).Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	offset := (page - 1) * pageSize
+	result := config.DB.Preload("Floor.Building").Offset(offset).Limit(pageSize).Find(&rooms)
+	if result.Error != nil {
+		return nil, 0, result.Error
+	}
+
+	var responses []utils.RoomResponse
+	for _, room := range rooms {
+		buildingResp := &utils.BuildingResponse{
+			ID:        room.Floor.Building.ID,
+			Code:      room.Floor.Building.Code,
+			Name:      room.Floor.Building.Name,
+			Location:  room.Floor.Building.Location,
+			CreatedAt: room.Floor.Building.CreatedAt,
+		}
+		floorResp := &utils.FloorResponse{
+			ID:          room.Floor.ID,
+			BuildingID:  room.Floor.BuildingID,
+			Building:    buildingResp,
+			FloorNumber: room.Floor.Number,
+			Name:        room.Floor.Name,
+			CreatedAt:   room.Floor.CreatedAt,
+			UpdatedAt:   room.Floor.UpdatedAt,
+		}
+		responses = append(responses, utils.RoomResponse{
+			ID:        room.ID,
+			FloorID:   room.FloorID,
+			Floor:     floorResp,
+			Code:      room.Code,
+			Name:      room.Name,
+			CreatedAt: room.CreatedAt,
+			UpdatedAt: room.UpdatedAt,
+		})
+	}
+
+	return responses, total, nil
+}
+
 // UpdateRoom updates an existing room
 func (rs *RoomService) UpdateRoom(id uint, req *utils.UpdateRoomRequest) (*utils.RoomResponse, error) {
 	var room models.Room
