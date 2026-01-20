@@ -25,7 +25,7 @@ type Report struct {
 	RoomID uint `gorm:"not null;index" json:"room_id" binding:"required"`
 
 	// Foreign key to User (nullable, assigned later by admin)
-	UserID *uint `gorm:"index" json:"user_id,omitempty"`
+	UserID *uint `gorm:"nullable;index" json:"user_id,omitempty"`
 
 	// Foreign key to Component
 	ComponentID uint `gorm:"not null;index" json:"component_id" binding:"required"`
@@ -39,7 +39,7 @@ type Report struct {
 
 	// Relationships
 	Room      Room      `gorm:"foreignKey:RoomID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"room,omitempty"`
-	User      *User     `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"user,omitempty"`
+	User      *User     `gorm:"foreignKey:UserID" json:"user,omitempty"`
 	Component Component `gorm:"foreignKey:ComponentID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"component,omitempty"`
 }
 
